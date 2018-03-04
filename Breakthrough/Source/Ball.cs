@@ -71,49 +71,49 @@ namespace Breakthrough
 		private void Launch()
 		{
 			float angle = random.Next(-60, 61);
-			int dirx = random.Next(0, 2) * 2 - 1;
+			int sign = random.Next(0, 2) * 2 - 1;
 
-			dX = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * dirx);
-			dY = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
+			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
+			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
 
 			Status = BallStatus.Launched;
 		}
 
 		private bool WallCollision()
 		{
-			return (Y + dY < 0) || (Y + Constants.BallSize + dY >= Constants.ScreenHeight);
+			return (X + dX < 0) || (X + Constants.BallSize + dX >= Constants.ScreenWidth);
 		}
 
 		private void BounceOffWall()
 		{
 			// Reflect off wall
-			dY *= -1;
+			dX *= -1;
 			bounces++;
 		}
 
 		private bool PaddleCollision(Paddle paddle)
 		{
-			if (dX < 0)
+			if (dY < 0)
 			{
-				if (X < paddle.X) return false;
-				if (X > paddle.X + Constants.PaddleWidth) return false;
+				if (Y < paddle.Y) return false;
+				if (Y > paddle.Y + Constants.PaddleHeight) return false;
 			}
 			else
 			{
-				if (X > paddle.X + Constants.PaddleWidth) return false;
-				if (X + Constants.BallSize < paddle.X) return false;
+				if (Y > paddle.Y + Constants.PaddleHeight) return false;
+				if (Y + Constants.BallSize < paddle.Y) return false;
 			}
 
-			return (Y + Constants.BallSize > paddle.Y && Y < paddle.Y + Constants.PaddleHeight);
+			return (X + Constants.BallSize > paddle.X && X < paddle.X + Constants.PaddleWidth);
 		}
 
 		private void BounceOffPaddle(Paddle paddle)
 		{
-			float angle = (2.14f * (Y - paddle.Y + Constants.BallSize) - 75.0f);
-			int sign = (paddle.X < Constants.ScreenWidth / 2) ? 1 : -1;
+			float angle = (2.14f * (X - paddle.X + Constants.BallSize) - 75.0f);
+			int sign = (paddle.Y < Constants.ScreenHeight / 2) ? 1 : -1;
 
-			dX = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
-			dY = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
+			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
+			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
 
 			bounces++;
 		}

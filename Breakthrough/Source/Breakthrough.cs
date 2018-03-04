@@ -10,8 +10,8 @@ namespace Breakthrough
 		public const int ScreenWidth = 640;
 		public const int ScreenHeight = 480;
 
-		public const int PaddleWidth = 10;
-		public const int PaddleHeight = 60;
+		public const int PaddleWidth = 60;
+		public const int PaddleHeight = 10;
 
 		public const int BallSize = 10;
 	}
@@ -104,13 +104,13 @@ namespace Breakthrough
 			player.Update(keyState, mouseState);
 
 			// Boundary check
-			if (ball.X < 0)
+			if (ball.Y < 0)
 			{
 				player.Score++;
 				ball.Reset();
 				robot.Reset();
 			}
-			else if (ball.X > Constants.ScreenWidth)
+			else if (ball.Y > Constants.ScreenHeight)
 			{
 				robot.Score++;
 				ball.Reset();
@@ -137,13 +137,13 @@ namespace Breakthrough
 			FillRectangle(ball.X, ball.Y, Constants.BallSize, Constants.BallSize, Color.White);
 
 			// Draw scores
+			Vector2 robotScorePosition = new Vector2(Constants.ScreenWidth - 100, 100);
+			Vector2 playerScorePosition = new Vector2(Constants.ScreenWidth - 100, Constants.ScreenHeight - 100 - spriteFont.MeasureString(player.Score.ToString()).Y);
+
 			spriteBatch.Begin();
-			spriteBatch.DrawString(spriteFont, robot.Score.ToString(), new Vector2(Constants.ScreenWidth * 4 / 10, Constants.ScreenHeight / 12), Color.White);
-			spriteBatch.DrawString(spriteFont, player.Score.ToString(), new Vector2(Constants.ScreenWidth * 6 / 10 - 12, Constants.ScreenHeight / 12), Color.White);
+			spriteBatch.DrawString(spriteFont, robot.Score.ToString(), robotScorePosition, Color.White);
+			spriteBatch.DrawString(spriteFont, player.Score.ToString(), playerScorePosition, Color.White);
 			spriteBatch.End();
-
-			// Draw game status text
-
 
 			base.Draw(gameTime);
 		}

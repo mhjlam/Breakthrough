@@ -11,38 +11,38 @@ namespace Breakthrough
 		public int X
 		{
 			get { return x; }
-			set { x = value; }
-			//set
-			//{
-			//	x = value;
+			set
+			{
+				x = value;
 
-			//	if (x < 0)
-			//	{
-			//		x = 0;
-			//	}
-			//	else if (x + Constants.PaddleWidth > Constants.ScreenWidth)
-			//	{
-			//		x = Constants.ScreenWidth - Constants.PaddleWidth;
-			//	}
-			//}
+				if (x < 0)
+				{
+					x = 0;
+				}
+				else if (x + Constants.PaddleWidth > Constants.ScreenWidth)
+				{
+					x = Constants.ScreenWidth - Constants.PaddleWidth;
+				}
+			}
 		}
 
 		public int Y
 		{
 			get { return y; }
-			set
-			{
-				y = value;
+			set { y = value; }
+			//set
+			//{
+			//	y = value;
 
-				if (y < 0)
-				{
-					y = 0;
-				}
-				else if (y + Constants.PaddleHeight > Constants.ScreenHeight)
-				{
-					y = Constants.ScreenHeight - Constants.PaddleHeight;
-				}
-			}
+			//	if (y < 0)
+			//	{
+			//		y = 0;
+			//	}
+			//	else if (y + Constants.PaddleHeight > Constants.ScreenHeight)
+			//	{
+			//		y = Constants.ScreenHeight - Constants.PaddleHeight;
+			//	}
+			//}
 		}
 
 		public int Score;
@@ -65,13 +65,13 @@ namespace Breakthrough
 
 	public class Player : Paddle
 	{
-		public Player(int x = Constants.ScreenWidth - (40 + Constants.PaddleWidth), int y = Constants.ScreenHeight / 2 - Constants.PaddleHeight / 2) : base(x, y)
+		public Player(int x = Constants.ScreenWidth / 2 - Constants.PaddleWidth / 2, int y = Constants.ScreenHeight - 40 + Constants.PaddleHeight) : base(x, y)
 		{
 		}
 		
 		public void Update(KeyboardState keyState, MouseState mouseState)
 		{
-			Y = mouseState.Y;
+			X = mouseState.X;
 		}
 	}
 
@@ -81,7 +81,7 @@ namespace Breakthrough
 		public int pX;
 		public int pY;
 
-		public Robot(int x = 40, int y = Constants.ScreenHeight / 2 - Constants.PaddleHeight / 2) : base(x, y)
+		public Robot(int x = Constants.ScreenWidth / 2 - Constants.PaddleWidth / 2, int y = 40) : base(x, y)
 		{
 			pX = 0;
 			pY = 0;
@@ -90,46 +90,46 @@ namespace Breakthrough
 		public void Update(Ball ball)
 		{
 			// Prediction without considering wall collisions
-			float slope = (float)(ball.Y - ball.Y + ball.dY) / (ball.X - ball.X + ball.dX);
-			int paddleDistance = ball.X - x;
-			pY = (int)Math.Abs(slope * -paddleDistance + ball.Y);
+			float slope = (float)(ball.X - ball.X + ball.dX) / (ball.Y - ball.Y + ball.dY);
+			int paddleDistance = ball.Y - y;
+			pX = (int)Math.Abs(slope * -paddleDistance + ball.X);
 
 			// Prediction while considering wall collisions
-			int reflections = pY / Constants.ScreenHeight;
+			int reflections = pX / Constants.ScreenWidth;
 
 			if (reflections % 2 == 0)
 			{
-				pY = pY % Constants.ScreenHeight;
+				pX = pX % Constants.ScreenWidth;
 			}
 			else
 			{
-				pY = Constants.ScreenHeight - (pY % Constants.ScreenHeight);
+				pX = Constants.ScreenWidth - (pX % Constants.ScreenWidth);
 			}
 
-			// Ball is going right
-			if (ball.dX >= 0)
+			// Ball is going down
+			if (ball.dY >= 0)
 			{
 				// Move robot paddle slowly to screen center
-				if (y + Constants.PaddleHeight / 2 < Constants.ScreenHeight / 2)
+				if (x + Constants.PaddleWidth / 2 < Constants.ScreenWidth / 2)
 				{
-					Y += 2;
+					X += 2;
 				}
-				else if (y + Constants.PaddleHeight / 2 > Constants.ScreenHeight / 2)
+				else if (x + Constants.PaddleWidth / 2 > Constants.ScreenWidth / 2)
 				{
-					Y -= 2;
+					X -= 2;
 				}
 			}
-			// Ball is going left and in close range to robot paddle
-			else if (ball.X < Constants.ScreenWidth * 3 / 5 && ball.dX < 0)
+			// Ball is going up and approaching robot paddle
+			else if (ball.dY < 0 && ball.Y < Constants.ScreenHeight * 4 / 5)
 			{
 				// Follow the ball
-				if (y + (Constants.PaddleHeight - Constants.BallSize) / 2 < pY - 2)
+				if (x + (Constants.PaddleWidth - Constants.BallSize) / 2 < pX - 2)
 				{
-					Y += ball.Speed / 8 * 5;
+					X += ball.Speed / 8 * 5;
 				}
-				else if (y + (Constants.PaddleHeight - Constants.BallSize) / 2 > pY + 2)
+				else if (x + (Constants.PaddleWidth - Constants.BallSize) / 2 > pX + 2)
 				{
-					Y -= ball.Speed / 8 * 5;
+					X -= ball.Speed / 8 * 5;
 				}
 			}
 		}
