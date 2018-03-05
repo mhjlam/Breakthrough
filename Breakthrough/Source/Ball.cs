@@ -109,7 +109,7 @@ namespace Breakthrough
 
 		private void BounceOffPaddle(Paddle paddle)
 		{
-			float angle = (2.14f * (X - paddle.X + Constants.BallSize) - 75.0f);
+			float angle = (2.0f * (X + (Constants.BallSize / 2) - paddle.X) - Constants.PaddleWidth);
 			int sign = (paddle.Y < Constants.ScreenHeight / 2) ? 1 : -1;
 
 			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
