@@ -26,8 +26,8 @@ namespace Breakthrough
 
 		public void Reset()
 		{
-			X = Constants.ScreenWidth / 2 - Constants.BallSize / 2;
-			Y = Constants.ScreenHeight / 2 - Constants.BallSize / 2;
+			X = Constants.FieldWidth / 2 - Constants.BallSize / 2;
+			Y = Constants.FieldHeight / 2 - Constants.BallSize / 2;
 			dX = 0;
 			dY = 0;
 			Speed = 8;
@@ -35,7 +35,7 @@ namespace Breakthrough
 			Status = BallStatus.Ready;
 		}
 
-		public void Update(Player player, Robot robot)
+		public void Update(Field field, Player player, Robot robot)
 		{
 			if (Status == BallStatus.Launch)
 			{
@@ -46,6 +46,10 @@ namespace Breakthrough
 			if (WallCollision())
 			{
 				BounceOffWall();
+			}
+			else if (field.Collision(this))
+			{
+				BounceOffBrick();
 			}
 			else if (PaddleCollision(robot))
 			{
@@ -81,13 +85,20 @@ namespace Breakthrough
 
 		private bool WallCollision()
 		{
-			return (X + dX < 0) || (X + Constants.BallSize + dX >= Constants.ScreenWidth);
+			return (X + dX < 0) || (X + Constants.BallSize + dX >= Constants.FieldWidth);
 		}
 
 		private void BounceOffWall()
 		{
 			// Reflect off wall
 			dX *= -1;
+			bounces++;
+		}
+
+		private void BounceOffBrick()
+		{
+			// TODO: This should depend on the angle of incidence
+			dY *= -1;
 			bounces++;
 		}
 
@@ -110,7 +121,7 @@ namespace Breakthrough
 		private void BounceOffPaddle(Paddle paddle)
 		{
 			float angle = (2.0f * (X + (Constants.BallSize / 2) - paddle.X) - Constants.PaddleWidth);
-			int sign = (paddle.Y < Constants.ScreenHeight / 2) ? 1 : -1;
+			int sign = (paddle.Y < Constants.FieldHeight / 2) ? 1 : -1;
 
 			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
 			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);

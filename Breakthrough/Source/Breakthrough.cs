@@ -7,8 +7,11 @@ namespace Breakthrough
 {
 	public static class Constants
 	{
-		public const int ScreenWidth = 640;
-		public const int ScreenHeight = 480;
+		public const int FieldWidth = 600;
+		public const int FieldHeight = 600;
+
+		public const int ScreenWidth = 800;
+		public const int ScreenHeight = 600;
 
 		public const int PaddleWidth = 60;
 		public const int PaddleHeight = 10;
@@ -19,6 +22,7 @@ namespace Breakthrough
 	public class Breakthrough : Game
 	{
 		Ball ball;
+		Field field;
 		Robot robot;
 		Player player;
 
@@ -54,6 +58,7 @@ namespace Breakthrough
 			prevKeyState = Keyboard.GetState();
 
 			ball = new Ball();
+			field = new Field();
 			robot = new Robot();
 			player = new Player();
 		}
@@ -99,7 +104,8 @@ namespace Breakthrough
 				return;
 			}
 
-			ball.Update(player, robot);
+			ball.Update(field, player, robot);
+			field.Update();
 			robot.Update(ball);
 			player.Update(keyState, mouseState);
 
@@ -110,7 +116,7 @@ namespace Breakthrough
 				ball.Reset();
 				robot.Reset();
 			}
-			else if (ball.Y > Constants.ScreenHeight)
+			else if (ball.Y > Constants.FieldHeight)
 			{
 				robot.Score++;
 				ball.Reset();
@@ -127,6 +133,16 @@ namespace Breakthrough
 		{
 			GraphicsDevice.Clear(Color.Black);
 
+			// Draw playing field
+			FillRectangle(-10, 0, 10, Constants.FieldHeight, Color.White);
+			FillRectangle(Constants.FieldWidth, 0, 10, Constants.FieldHeight, Color.White);
+
+			// Draw field blocks
+			foreach (Brick block in field.Bricks)
+			{
+				FillRectangle(block.X, block.Y, block.Width, block.Height, block.Color);
+			}
+
 			// Draw player paddle
 			FillRectangle(player.X, player.Y, Constants.PaddleWidth, Constants.PaddleHeight, Color.White);
 
@@ -137,8 +153,8 @@ namespace Breakthrough
 			FillRectangle(ball.X, ball.Y, Constants.BallSize, Constants.BallSize, Color.White);
 
 			// Draw scores
-			Vector2 robotScorePosition = new Vector2(Constants.ScreenWidth - 100, 100);
-			Vector2 playerScorePosition = new Vector2(Constants.ScreenWidth - 100, Constants.ScreenHeight - 100 - spriteFont.MeasureString(player.Score.ToString()).Y);
+			Vector2 robotScorePosition = new Vector2(Constants.ScreenWidth - 50, 50);
+			Vector2 playerScorePosition = new Vector2(Constants.ScreenWidth - 50, Constants.ScreenHeight - 50 - spriteFont.MeasureString(player.Score.ToString()).Y);
 
 			spriteBatch.Begin();
 			spriteBatch.DrawString(spriteFont, robot.Score.ToString(), robotScorePosition, Color.White);
@@ -150,8 +166,11 @@ namespace Breakthrough
 
 		private void FillRectangle(int left, int top, int width, int height, Color color)
 		{
+			int offsetX = (Constants.ScreenWidth - Constants.FieldWidth) / 2;
+			int offsetY = (Constants.ScreenHeight - Constants.FieldHeight) / 2;
+
 			surface.SetData(new Color[] { color });
-			Rectangle rect = new Rectangle(left, top, width, height);
+			Rectangle rect = new Rectangle(left + offsetX, top + offsetY, width, height);
 
 			spriteBatch.Begin();
 			spriteBatch.Draw(surface, rect, color);
