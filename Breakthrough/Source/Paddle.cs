@@ -65,13 +65,35 @@ namespace Breakthrough
 
 	public class Player : Paddle
 	{
+		public int Speed = 8;
+
+		MouseState prevMouseState;
+		KeyboardState prevKeyState;
+
 		public Player(int x = Constants.FieldWidth / 2 - Constants.PaddleWidth / 2, int y = Constants.FieldHeight - 40 + Constants.PaddleHeight) : base(x, y)
 		{
+			prevMouseState = Mouse.GetState();
+			prevKeyState = Keyboard.GetState();
 		}
 		
 		public void Update(KeyboardState keyState, MouseState mouseState)
 		{
-			X = mouseState.X;
+			if (mouseState.Position != prevMouseState.Position)
+			{
+				X = mouseState.X;
+			}
+
+			if (keyState.IsKeyDown(Keys.Right))
+			{
+				X += Speed;
+			}
+			else if (keyState.IsKeyDown(Keys.Left))
+			{
+				X -= Speed;
+			}
+			
+			prevMouseState = mouseState;
+			prevKeyState = keyState;
 		}
 	}
 

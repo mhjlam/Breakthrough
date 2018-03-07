@@ -26,9 +26,6 @@ namespace Breakthrough
 		Robot robot;
 		Player player;
 
-		MouseState prevMouseState;
-		KeyboardState prevKeyState;
-
 		Texture2D surface;
 		SpriteFont spriteFont;
 		SpriteBatch spriteBatch;
@@ -54,9 +51,6 @@ namespace Breakthrough
 
 		public void Reset()
 		{
-			prevMouseState = Mouse.GetState();
-			prevKeyState = Keyboard.GetState();
-
 			ball = new Ball();
 			field = new Field();
 			robot = new Robot();
@@ -91,7 +85,7 @@ namespace Breakthrough
 			{
 				Exit();
 			}
-			else if (keyState.IsKeyDown(Keys.Space) && !prevKeyState.IsKeyDown(Keys.Space))
+			else if (keyState.IsKeyDown(Keys.Space))
 			{
 				if (ball.Status == BallStatus.Ready)
 				{
@@ -122,9 +116,6 @@ namespace Breakthrough
 				ball.Reset();
 				robot.Reset();
 			}
-
-			prevMouseState = mouseState;
-			prevKeyState = keyState;
 
 			base.Update(gameTime);
 		}
