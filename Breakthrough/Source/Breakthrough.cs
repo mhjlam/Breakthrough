@@ -131,7 +131,7 @@ namespace Breakthrough
 			// Draw field blocks
 			foreach (Brick block in field.Bricks)
 			{
-				FillRectangle(block.X, block.Y, block.Width, block.Height, block.Color);
+				FillRectangle(block.X - 1, block.Y - 1, block.Width - 1, block.Height - 1, block.Color);
 			}
 
 			// Draw player paddle

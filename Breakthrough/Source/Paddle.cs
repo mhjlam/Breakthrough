@@ -5,8 +5,8 @@ namespace Breakthrough
 {
 	public class Paddle
 	{
-		protected int x, y;
-		protected int ox, oy;
+		protected int x, y;		// current position
+		protected int ox, oy;	// original position
 
 		public int X
 		{
@@ -30,19 +30,6 @@ namespace Breakthrough
 		{
 			get { return y; }
 			set { y = value; }
-			//set
-			//{
-			//	y = value;
-
-			//	if (y < 0)
-			//	{
-			//		y = 0;
-			//	}
-			//	else if (y + Constants.PaddleHeight > Constants.ScreenHeight)
-			//	{
-			//		y = Constants.ScreenHeight - Constants.PaddleHeight;
-			//	}
-			//}
 		}
 
 		public int Score;

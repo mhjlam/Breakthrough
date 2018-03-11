@@ -20,3 +20,6 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/Font.spritefont
 
+#begin levels/001.json
+/copy:levels/001.json
+
