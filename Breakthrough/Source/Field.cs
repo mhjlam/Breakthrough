@@ -26,7 +26,7 @@ namespace Breakthrough
 		public int[,] BrickLayout;
 	}
 
-	public struct Brick
+	public class Brick
 	{
 		public int X, Y;
 		public int Width;
@@ -49,7 +49,7 @@ namespace Breakthrough
 	public class Field
 	{
 		private Level level;
-		private List<Brick> collisions = new List<Brick>();
+		private List<Brick> destroyedBricks = new List<Brick>();
 
 		public const int Width = 600;
 		public const int Height = 600;
@@ -104,16 +104,22 @@ namespace Breakthrough
 		{
 			foreach (Brick brick in Bricks)
 			{
-				// TODO: handle case where ball hits multiple bricks simulataneously
-
 				if (ball.X + Ball.Width + ball.dX > brick.X && ball.X + ball.dX < brick.X + brick.Width && ball.Y + Ball.Height > brick.Y && ball.Y < brick.Y + brick.Height)
 				{
-					collisions.Add(brick);
+					if (--brick.Durability <= 0)
+					{
+						destroyedBricks.Add(brick);
+					}
+
 					return BrickCollision.Horizontal;
 				}
 				else if (ball.X + Ball.Width > brick.X && ball.X < brick.X + brick.Width && ball.Y + Ball.Height + ball.dY > brick.Y && ball.Y + ball.dY < brick.Y + brick.Height)
 				{
-					collisions.Add(brick);
+					if (--brick.Durability <= 0)
+					{
+						destroyedBricks.Add(brick);
+					}
+
 					return BrickCollision.Vertical;
 				}
 			}
@@ -124,12 +130,12 @@ namespace Breakthrough
 		public void Update()
 		{
 			// TODO: Play brick destruction / invulnerable animation and spawn power-ups if they carry them
-			foreach (Brick block in collisions)
+			foreach (Brick brick in destroyedBricks)
 			{
-				Bricks.Remove(block);
+				Bricks.Remove(brick);
 			}
 
-			collisions.Clear();
+			destroyedBricks.Clear();
 		}
 	}
 }
