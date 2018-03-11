@@ -17,6 +17,8 @@ namespace Breakthrough
 		public const int PaddleHeight = 10;
 
 		public const int BallSize = 10;
+		public const int BallWidth = 10;
+		public const int BallHeight = 10;
 	}
 
 	public class Breakthrough : Game

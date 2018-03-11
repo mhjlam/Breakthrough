@@ -16,7 +16,7 @@ namespace Breakthrough
 		public int X, Y;
 		public int dX, dY;
 		public int Speed;
-		private int bounces;
+		public int Bounces;
 		public BallStatus Status;
 
 		public Ball()
@@ -31,7 +31,7 @@ namespace Breakthrough
 			dX = 0;
 			dY = 0;
 			Speed = 8;
-			bounces = 0;
+			Bounces = 0;
 			Status = BallStatus.Ready;
 		}
 
@@ -41,15 +41,11 @@ namespace Breakthrough
 			{
 				Launch();
 			}
-
+			
 			// Check for collision
 			if (WallCollision())
 			{
 				BounceOffWall();
-			}
-			else if (field.Collision(this))
-			{
-				BounceOffBrick();
 			}
 			else if (PaddleCollision(robot))
 			{
@@ -59,12 +55,17 @@ namespace Breakthrough
 			{
 				BounceOffPaddle(player);
 			}
+			else
+			{
+				BrickCollision collision = field.Collision(this);
+				BounceOffBrick(collision);
+			}
 
 			// Increase ball speed based on bounces
-			if (bounces == 5)
+			if (Bounces == 5)
 			{
 				Speed++;
-				bounces = 0;
+				Bounces = 0;
 			}
 
 			// Update ball position
@@ -92,14 +93,23 @@ namespace Breakthrough
 		{
 			// Reflect off wall
 			dX *= -1;
-			bounces++;
+			Bounces++;
 		}
 
-		private void BounceOffBrick()
+		private void BounceOffBrick(BrickCollision collision)
 		{
-			// TODO: This should depend on the angle of incidence
-			dY *= -1;
-			bounces++;
+			if (collision == BrickCollision.None) return;
+
+			if (collision == BrickCollision.Horizontal)
+			{
+				dX *= -1;
+			}
+			else if (collision == BrickCollision.Vertical)
+			{
+				dY *= -1;
+			}
+
+			Bounces++;
 		}
 
 		private bool PaddleCollision(Paddle paddle)
@@ -126,7 +136,7 @@ namespace Breakthrough
 			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
 			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
 
-			bounces++;
+			Bounces++;
 		}
 	}
 }

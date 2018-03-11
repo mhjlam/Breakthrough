@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,13 @@ using System.IO;
 
 namespace Breakthrough
 {
+	public enum BrickCollision
+	{
+		None,
+		Horizontal,
+		Vertical
+	}
+
 	public struct BrickType
 	{
 		public int Width;
@@ -51,12 +57,6 @@ namespace Breakthrough
 		public Field(string levelFile = "001")
 		{
 			LoadMap($"{levelFile:###}");
-
-			//JsonConvert.DeserializeObject()
-
-			//Bricks.Add(new Brick(Constants.FieldWidth / 2 - 60, 60));
-			//Bricks.Add(new Brick(Constants.FieldWidth / 2 - 20, 60));
-			//Bricks.Add(new Brick(Constants.FieldWidth / 2 + 20, 60));
 		}
 
 		private void LoadMap(string levelFile)
@@ -98,28 +98,30 @@ namespace Breakthrough
 			}
 		}
 
-		public bool Collision(Ball ball)
+		public BrickCollision Collision(Ball ball)
 		{
-			// TODO: Optimize
-			Rectangle ballRect = new Rectangle(ball.X, ball.Y, Constants.BallSize, Constants.BallSize);
-
-			foreach (Brick block in Bricks)
+			foreach (Brick brick in Bricks)
 			{
-				Rectangle blockRect = new Rectangle(block.X, block.Y, block.Width, block.Height);
-				if (!Rectangle.Intersect(ballRect, blockRect).IsEmpty)
+				// TODO: handle case where ball hits multiple bricks simulataneously
+
+				if (ball.X + Constants.BallWidth + ball.dX > brick.X && ball.X + ball.dX < brick.X + brick.Width && ball.Y + Constants.BallHeight > brick.Y && ball.Y < brick.Y + brick.Height)
 				{
-					collisions.Add(block);
-					return true; // TODO: handle case where ball hits two bricks simultaneously
+					collisions.Add(brick);
+					return BrickCollision.Horizontal;
+				}
+				else if (ball.X + Constants.BallWidth > brick.X && ball.X < brick.X + brick.Width && ball.Y + Constants.BallHeight + ball.dY > brick.Y && ball.Y + ball.dY < brick.Y + brick.Height)
+				{
+					collisions.Add(brick);
+					return BrickCollision.Vertical;
 				}
 			}
 
-			return false;
+			return BrickCollision.None;
 		}
 
 		public void Update()
 		{
-			// TODO: Play brick destruction / invulnerable animation
-			//       and spawn power-ups if they carry them
+			// TODO: Play brick destruction / invulnerable animation and spawn power-ups if they carry them
 			foreach (Brick block in collisions)
 			{
 				Bricks.Remove(block);
