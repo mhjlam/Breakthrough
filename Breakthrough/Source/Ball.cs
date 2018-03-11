@@ -19,6 +19,9 @@ namespace Breakthrough
 		public int Bounces;
 		public BallStatus Status;
 
+		public const int Width = 10;
+		public const int Height = 10;
+
 		public Ball()
 		{
 			Reset();
@@ -26,8 +29,8 @@ namespace Breakthrough
 
 		public void Reset()
 		{
-			X = Constants.FieldWidth / 2 - Constants.BallSize / 2;
-			Y = Constants.FieldHeight / 2 - Constants.BallSize / 2;
+			X = Field.Width / 2 - Ball.Width / 2;
+			Y = Field.Height / 2 - Ball.Height / 2;
 			dX = 0;
 			dY = 0;
 			Speed = 8;
@@ -86,7 +89,7 @@ namespace Breakthrough
 
 		private bool WallCollision()
 		{
-			return (X + dX < 0) || (X + Constants.BallSize + dX >= Constants.FieldWidth);
+			return (X + dX < 0) || (X + Ball.Width + dX >= Field.Width);
 		}
 
 		private void BounceOffWall()
@@ -117,21 +120,21 @@ namespace Breakthrough
 			if (dY < 0)
 			{
 				if (Y < paddle.Y) return false;
-				if (Y > paddle.Y + Constants.PaddleHeight) return false;
+				if (Y > paddle.Y + Paddle.Height) return false;
 			}
 			else
 			{
-				if (Y > paddle.Y + Constants.PaddleHeight) return false;
-				if (Y + Constants.BallSize < paddle.Y) return false;
+				if (Y > paddle.Y + Paddle.Height) return false;
+				if (Y + Ball.Height < paddle.Y) return false;
 			}
 
-			return (X + Constants.BallSize > paddle.X && X < paddle.X + Constants.PaddleWidth);
+			return (X + Ball.Width > paddle.X && X < paddle.X + Paddle.Width);
 		}
 
 		private void BounceOffPaddle(Paddle paddle)
 		{
-			float angle = (2.0f * (X + (Constants.BallSize / 2) - paddle.X) - Constants.PaddleWidth);
-			int sign = (paddle.Y < Constants.FieldHeight / 2) ? 1 : -1;
+			float angle = (2.0f * (X + (Ball.Width / 2) - paddle.X) - Paddle.Width);
+			int sign = (paddle.Y < Field.Height / 2) ? 1 : -1;
 
 			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
 			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);

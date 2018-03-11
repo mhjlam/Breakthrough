@@ -5,20 +5,10 @@ using System;
 
 namespace Breakthrough
 {
-	public static class Constants
+	public static class Screen
 	{
-		public const int FieldWidth = 600;
-		public const int FieldHeight = 600;
-
-		public const int ScreenWidth = 800;
-		public const int ScreenHeight = 600;
-
-		public const int PaddleWidth = 60;
-		public const int PaddleHeight = 10;
-
-		public const int BallSize = 10;
-		public const int BallWidth = 10;
-		public const int BallHeight = 10;
+		public const int Width = 800;
+		public const int Height = 600;
 	}
 
 	public class Breakthrough : Game
@@ -41,8 +31,8 @@ namespace Breakthrough
 			graphicsDevice = new GraphicsDeviceManager(this)
 			{
 				IsFullScreen = false,
-				PreferredBackBufferWidth = Constants.ScreenWidth,
-				PreferredBackBufferHeight = Constants.ScreenHeight
+				PreferredBackBufferWidth = Screen.Width,
+				PreferredBackBufferHeight = Screen.Height
 			};
 
 			Window.AllowUserResizing = false;
@@ -112,7 +102,7 @@ namespace Breakthrough
 				ball.Reset();
 				robot.Reset();
 			}
-			else if (ball.Y > Constants.FieldHeight)
+			else if (ball.Y > Field.Height)
 			{
 				robot.Score++;
 				ball.Reset();
@@ -127,8 +117,8 @@ namespace Breakthrough
 			GraphicsDevice.Clear(Color.Black);
 
 			// Draw playing field
-			FillRectangle(-10, 0, 10, Constants.FieldHeight, Color.White);
-			FillRectangle(Constants.FieldWidth, 0, 10, Constants.FieldHeight, Color.White);
+			FillRectangle(-10, 0, 10, Field.Height, Color.White);
+			FillRectangle(Field.Width, 0, 10, Field.Height, Color.White);
 
 			// Draw field blocks
 			foreach (Brick block in field.Bricks)
@@ -137,17 +127,17 @@ namespace Breakthrough
 			}
 
 			// Draw player paddle
-			FillRectangle(player.X, player.Y, Constants.PaddleWidth, Constants.PaddleHeight, Color.White);
+			FillRectangle(player.X, player.Y, Paddle.Width, Paddle.Height, Color.White);
 
 			// Draw robot paddle
-			FillRectangle(robot.X, robot.Y, Constants.PaddleWidth, Constants.PaddleHeight, Color.White);
+			FillRectangle(robot.X, robot.Y, Paddle.Width, Paddle.Height, Color.White);
 
 			// Draw ball
-			FillRectangle(ball.X, ball.Y, Constants.BallSize, Constants.BallSize, Color.White);
+			FillRectangle(ball.X, ball.Y, Ball.Width, Ball.Height, Color.White);
 
 			// Draw scores
-			Vector2 robotScorePosition = new Vector2(Constants.ScreenWidth - 50, 50);
-			Vector2 playerScorePosition = new Vector2(Constants.ScreenWidth - 50, Constants.ScreenHeight - 50 - spriteFont.MeasureString(player.Score.ToString()).Y);
+			Vector2 robotScorePosition = new Vector2(Screen.Width - 50, 50);
+			Vector2 playerScorePosition = new Vector2(Screen.Width - 50, Screen.Height - 50 - spriteFont.MeasureString(player.Score.ToString()).Y);
 
 			spriteBatch.Begin();
 			spriteBatch.DrawString(spriteFont, robot.Score.ToString(), robotScorePosition, Color.White);
@@ -159,8 +149,8 @@ namespace Breakthrough
 
 		private void FillRectangle(int left, int top, int width, int height, Color color)
 		{
-			int offsetX = (Constants.ScreenWidth - Constants.FieldWidth) / 2;
-			int offsetY = (Constants.ScreenHeight - Constants.FieldHeight) / 2;
+			int offsetX = (Screen.Width - Field.Width) / 2;
+			int offsetY = (Screen.Height - Field.Height) / 2;
 
 			surface.SetData(new Color[] { color });
 			Rectangle rect = new Rectangle(left + offsetX, top + offsetY, width, height);

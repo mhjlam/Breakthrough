@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -52,6 +51,9 @@ namespace Breakthrough
 		private Level level;
 		private List<Brick> collisions = new List<Brick>();
 
+		public const int Width = 600;
+		public const int Height = 600;
+
 		public List<Brick> Bricks = new List<Brick>();
 
 		public Field(string levelFile = "001")
@@ -73,10 +75,10 @@ namespace Breakthrough
 			int rows = level.BrickLayout.GetLength(0);
 			int columns = level.BrickLayout.GetLength(1);
 
-			int brickWidth = Constants.FieldWidth / columns;
-			int brickHeight = Constants.FieldHeight / 4 / rows;
+			int brickWidth = Field.Width / columns;
+			int brickHeight = Field.Height / 4 / rows;
 
-			int startHeight = Constants.FieldHeight * 1 / 5;
+			int startHeight = Field.Height * 1 / 5;
 
 			for (int r = 0; r < rows; ++r)
 			{
@@ -104,12 +106,12 @@ namespace Breakthrough
 			{
 				// TODO: handle case where ball hits multiple bricks simulataneously
 
-				if (ball.X + Constants.BallWidth + ball.dX > brick.X && ball.X + ball.dX < brick.X + brick.Width && ball.Y + Constants.BallHeight > brick.Y && ball.Y < brick.Y + brick.Height)
+				if (ball.X + Ball.Width + ball.dX > brick.X && ball.X + ball.dX < brick.X + brick.Width && ball.Y + Ball.Height > brick.Y && ball.Y < brick.Y + brick.Height)
 				{
 					collisions.Add(brick);
 					return BrickCollision.Horizontal;
 				}
-				else if (ball.X + Constants.BallWidth > brick.X && ball.X < brick.X + brick.Width && ball.Y + Constants.BallHeight + ball.dY > brick.Y && ball.Y + ball.dY < brick.Y + brick.Height)
+				else if (ball.X + Ball.Width > brick.X && ball.X < brick.X + brick.Width && ball.Y + Ball.Height + ball.dY > brick.Y && ball.Y + ball.dY < brick.Y + brick.Height)
 				{
 					collisions.Add(brick);
 					return BrickCollision.Vertical;

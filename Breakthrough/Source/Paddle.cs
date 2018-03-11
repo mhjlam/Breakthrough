@@ -6,7 +6,10 @@ namespace Breakthrough
 	public class Paddle
 	{
 		protected int x, y;		// current position
-		protected int ox, oy;	// original position
+		protected int ox, oy;   // original position
+
+		public const int Width = 60;
+		public const int Height = 10;
 
 		public int X
 		{
@@ -19,9 +22,9 @@ namespace Breakthrough
 				{
 					x = 0;
 				}
-				else if (x + Constants.PaddleWidth > Constants.FieldWidth)
+				else if (x + Paddle.Width > Field.Width)
 				{
-					x = Constants.FieldWidth - Constants.PaddleWidth;
+					x = Field.Width - Paddle.Width;
 				}
 			}
 		}
@@ -57,7 +60,7 @@ namespace Breakthrough
 		MouseState prevMouseState;
 		KeyboardState prevKeyState;
 
-		public Player(int x = Constants.FieldWidth / 2 - Constants.PaddleWidth / 2, int y = Constants.FieldHeight - 40 + Constants.PaddleHeight) : base(x, y)
+		public Player(int x = Field.Width / 2 - Paddle.Width / 2, int y = Field.Height - 40 + Paddle.Height) : base(x, y)
 		{
 			prevMouseState = Mouse.GetState();
 			prevKeyState = Keyboard.GetState();
@@ -90,7 +93,7 @@ namespace Breakthrough
 		public int pX;
 		public int pY;
 
-		public Robot(int x = Constants.FieldWidth / 2 - Constants.PaddleWidth / 2, int y = 40) : base(x, y)
+		public Robot(int x = Field.Width / 2 - Paddle.Width / 2, int y = 40) : base(x, y)
 		{
 			pX = 0;
 			pY = 0;
@@ -104,39 +107,39 @@ namespace Breakthrough
 			pX = (int)Math.Abs(slope * -paddleDistance + ball.X);
 
 			// Prediction while considering wall collisions
-			int reflections = pX / Constants.FieldWidth;
+			int reflections = pX / Field.Width;
 
 			if (reflections % 2 == 0)
 			{
-				pX = pX % Constants.FieldWidth;
+				pX = pX % Field.Width;
 			}
 			else
 			{
-				pX = Constants.FieldWidth - (pX % Constants.FieldWidth);
+				pX = Field.Width - (pX % Field.Width);
 			}
 
 			// Ball is going down
 			if (ball.dY >= 0)
 			{
 				// Move robot paddle slowly to screen center
-				if (x + Constants.PaddleWidth / 2 < Constants.FieldWidth / 2)
+				if (x + Paddle.Width / 2 < Field.Width / 2)
 				{
 					X += 2;
 				}
-				else if (x + Constants.PaddleWidth / 2 > Constants.FieldWidth / 2)
+				else if (x + Paddle.Width / 2 > Field.Width / 2)
 				{
 					X -= 2;
 				}
 			}
 			// Ball is going up and approaching robot paddle
-			else if (ball.dY < 0 && ball.Y < Constants.FieldHeight * 4 / 5)
+			else if (ball.dY < 0 && ball.Y < Field.Height * 4 / 5)
 			{
 				// Follow the ball
-				if (x + (Constants.PaddleWidth - Constants.BallSize) / 2 < pX - 2)
+				if (x + (Paddle.Width - Ball.Width) / 2 < pX - 2)
 				{
 					X += ball.Speed / 8 * 6;
 				}
-				else if (x + (Constants.PaddleWidth - Constants.BallSize) / 2 > pX + 2)
+				else if (x + (Paddle.Width - Ball.Width) / 2 > pX + 2)
 				{
 					X -= ball.Speed / 8 * 6;
 				}
