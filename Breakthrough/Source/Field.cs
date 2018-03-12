@@ -22,8 +22,13 @@ namespace Breakthrough
 
 	public struct Level
 	{
-		public BrickType[] BrickTypes;
-		public int[,] BrickLayout;
+		public int[,] Layout;
+	}
+
+	public struct Map
+	{
+		public BrickType[] Bricks;
+		public List<Level> Levels;
 	}
 
 	public class Brick
@@ -34,6 +39,7 @@ namespace Breakthrough
 
 		public Color Color;
 		public int Durability;
+		public int Hits;
 
 		public Brick(int x, int y, Color? color = null, int width = 40, int height = 20, int durability = 1)
 		{
@@ -43,37 +49,44 @@ namespace Breakthrough
 			Height = height;
 			Color = color ?? Color.White;
 			Durability = durability;
+			Hits = 0;
 		}
 	}
 
 	public class Field
 	{
-		private Level level;
-		private List<Brick> destroyedBricks = new List<Brick>();
+		private Map map;
+		private int currentLevel = 0;
 
 		public const int Width = 600;
 		public const int Height = 600;
 
 		public List<Brick> Bricks = new List<Brick>();
 
-		public Field(string levelFile = "001")
+		public Field()
 		{
-			LoadMap($"{levelFile:###}");
+			LoadMapFile("Content/map/map.json");
 		}
 
-		private void LoadMap(string levelFile)
+		private void LoadMapFile(string file)
 		{
-			if (levelFile == "") return;
-			if (!levelFile.EndsWith(".json")) levelFile += ".json";
+			if (!File.Exists(file)) return;
 
-			string path = $"Content/levels/{levelFile}";
-			if (!File.Exists(path)) return;
+			string contents = File.ReadAllText(file);
+			map = (Map)JsonConvert.DeserializeObject(contents, typeof(Map));
 
-			string contents = File.ReadAllText(path);
-			level = (Level)JsonConvert.DeserializeObject(contents, typeof(Level));
+			LoadNextMap();
+		}
 
-			int rows = level.BrickLayout.GetLength(0);
-			int columns = level.BrickLayout.GetLength(1);
+		private void LoadNextMap()
+		{
+			if (currentLevel >= map.Levels.Count) return;
+
+			Bricks.Clear();
+			Level level = map.Levels[currentLevel];
+
+			int rows = level.Layout.GetLength(0);
+			int columns = level.Layout.GetLength(1);
 
 			int brickWidth = Field.Width / columns;
 			int brickHeight = Field.Height / 4 / rows;
@@ -86,13 +99,15 @@ namespace Breakthrough
 
 				for (int c = 0; c < columns; ++c)
 				{
-					int value = level.BrickLayout[r, c] - 1;
+					int value = level.Layout[r, c] - 1;
 
-					if (value >= 0 && value < level.BrickTypes.Length)
+					if (value >= 0 && value < map.Bricks.Length)
 					{
-						BrickType type = level.BrickTypes[value];
+						BrickType type = map.Bricks[value];
 
-						Bricks.Add(new Brick(x, startHeight + r * brickHeight, new Color(type.Color[0], type.Color[1], type.Color[2]), brickWidth, brickHeight, type.Durability));
+						Color brickColor = new Color(type.Color[0], type.Color[1], type.Color[2]);
+						Brick brick = new Brick(x, startHeight + r * brickHeight, brickColor, brickWidth, brickHeight, type.Durability);
+						Bricks.Add(brick);
 					}
 
 					x += brickWidth;
@@ -104,22 +119,20 @@ namespace Breakthrough
 		{
 			foreach (Brick brick in Bricks)
 			{
-				if (ball.X + Ball.Width + ball.dX > brick.X && ball.X + ball.dX < brick.X + brick.Width && ball.Y + Ball.Height > brick.Y && ball.Y < brick.Y + brick.Height)
+				if (ball.X + Ball.Width + ball.dX > brick.X && 
+					ball.X + ball.dX < brick.X + brick.Width && 
+					ball.Y + Ball.Height > brick.Y && 
+					ball.Y < brick.Y + brick.Height)
 				{
-					if (--brick.Durability <= 0)
-					{
-						destroyedBricks.Add(brick);
-					}
-
+					brick.Hits++;
 					return BrickCollision.Horizontal;
 				}
-				else if (ball.X + Ball.Width > brick.X && ball.X < brick.X + brick.Width && ball.Y + Ball.Height + ball.dY > brick.Y && ball.Y + ball.dY < brick.Y + brick.Height)
+				else if (ball.X + Ball.Width > brick.X && 
+						 ball.X < brick.X + brick.Width && 
+						 ball.Y + Ball.Height + ball.dY > brick.Y && 
+						 ball.Y + ball.dY < brick.Y + brick.Height)
 				{
-					if (--brick.Durability <= 0)
-					{
-						destroyedBricks.Add(brick);
-					}
-
+					brick.Hits++;
 					return BrickCollision.Vertical;
 				}
 			}
@@ -130,12 +143,20 @@ namespace Breakthrough
 		public void Update()
 		{
 			// TODO: Play brick destruction / invulnerable animation and spawn power-ups if they carry them
-			foreach (Brick brick in destroyedBricks)
+			foreach (Brick brick in Bricks)
 			{
-				Bricks.Remove(brick);
+				if (brick.Hits == brick.Durability)
+				{
+					Bricks.Remove(brick);
+					break;
+				}
 			}
 
-			destroyedBricks.Clear();
+			if (Bricks.Count == 0 && currentLevel + 1 < map.Levels.Count)
+			{
+				currentLevel++;
+				LoadNextMap();
+			}
 		}
 	}
 }
