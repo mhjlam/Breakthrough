@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Breakthrough
 {
@@ -24,7 +25,10 @@ namespace Breakthrough
 
 		GraphicsDeviceManager graphicsDevice;
 
-		public Breakthrough()
+        [DllImport("user32.dll")]
+        static extern void ClipCursor(ref Rectangle rect);
+
+        public Breakthrough()
 		{
 			Content.RootDirectory = "Content";
 
@@ -51,8 +55,8 @@ namespace Breakthrough
 
 		protected override void Initialize()
 		{
-			Reset();
-			base.Initialize();
+            Reset();
+            base.Initialize();
 		}
 
 		protected override void LoadContent()
@@ -72,6 +76,15 @@ namespace Breakthrough
 		{
 			MouseState mouseState = Mouse.GetState();
 			KeyboardState keyState = Keyboard.GetState();
+            
+            if (IsActive)
+            {
+                // Restrict mouse to client window
+                Rectangle rect = Window.ClientBounds;
+                rect.Width += rect.X;
+                rect.Height += rect.Y;
+                ClipCursor(ref rect);
+            }
 
 			if (keyState.IsKeyDown(Keys.Escape))
 			{
@@ -147,7 +160,7 @@ namespace Breakthrough
 			base.Draw(gameTime);
 		}
 
-		private void FillRectangle(int left, int top, int width, int height, Color color)
+        private void FillRectangle(int left, int top, int width, int height, Color color)
 		{
 			int offsetX = (Screen.Width - Field.Width) / 2;
 			int offsetY = (Screen.Height - Field.Height) / 2;
