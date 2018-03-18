@@ -25,10 +25,10 @@ namespace Breakthrough
 
 		GraphicsDeviceManager graphicsDevice;
 
-        [DllImport("user32.dll")]
-        static extern void ClipCursor(ref Rectangle rect);
+		[DllImport("user32.dll")]
+		static extern void ClipCursor(ref Rectangle rect);
 
-        public Breakthrough()
+		public Breakthrough()
 		{
 			Content.RootDirectory = "Content";
 
@@ -55,8 +55,8 @@ namespace Breakthrough
 
 		protected override void Initialize()
 		{
-            Reset();
-            base.Initialize();
+			Reset();
+			base.Initialize();
 		}
 
 		protected override void LoadContent()
@@ -76,21 +76,21 @@ namespace Breakthrough
 		{
 			MouseState mouseState = Mouse.GetState();
 			KeyboardState keyState = Keyboard.GetState();
-            
-            if (IsActive)
-            {
-                // Restrict mouse to client window
-                Rectangle rect = Window.ClientBounds;
-                rect.Width += rect.X;
-                rect.Height += rect.Y;
-                ClipCursor(ref rect);
-            }
+			
+			if (IsActive)
+			{
+				// Restrict mouse to client window
+				Rectangle rect = Window.ClientBounds;
+				rect.Width += rect.X;
+				rect.Height += rect.Y;
+				ClipCursor(ref rect);
+			}
 
 			if (keyState.IsKeyDown(Keys.Escape))
 			{
 				Exit();
 			}
-			else if (keyState.IsKeyDown(Keys.Space))
+			else if (keyState.IsKeyDown(Keys.Space) || mouseState.LeftButton == ButtonState.Pressed)
 			{
 				if (ball.Status == BallStatus.Ready)
 				{
@@ -100,6 +100,13 @@ namespace Breakthrough
 
 			if (ball.Status == BallStatus.Ready)
 			{
+				// Allow paddle movement
+				player.Update(keyState, mouseState);
+
+				// Update ball position
+				ball.X = player.X + Paddle.Width / 2;
+				ball.Y = player.Y - Ball.Height;
+
 				return;
 			}
 
@@ -136,7 +143,7 @@ namespace Breakthrough
 			// Draw field blocks
 			foreach (Brick block in field.Bricks)
 			{
-				FillRectangle(block.X - 1, block.Y - 1, block.Width - 1, block.Height - 1, block.Color);
+				FillRectangle(block.X + 1, block.Y + 1, block.Width - 2, block.Height - 2, block.Color);
 			}
 
 			// Draw player paddle
@@ -160,7 +167,7 @@ namespace Breakthrough
 			base.Draw(gameTime);
 		}
 
-        private void FillRectangle(int left, int top, int width, int height, Color color)
+		private void FillRectangle(int left, int top, int width, int height, Color color)
 		{
 			int offsetX = (Screen.Width - Field.Width) / 2;
 			int offsetY = (Screen.Height - Field.Height) / 2;

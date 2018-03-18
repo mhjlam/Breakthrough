@@ -29,8 +29,8 @@ namespace Breakthrough
 
 		public void Reset()
 		{
-			X = Field.Width / 2 - Ball.Width / 2;
-			Y = Field.Height / 2 - Ball.Height / 2;
+			X = 0;
+			Y = 0;
 			dX = 0;
 			dY = 0;
 			Speed = 8;
@@ -42,7 +42,12 @@ namespace Breakthrough
 		{
 			if (Status == BallStatus.Launch)
 			{
-				Launch();
+				float angle = random.Next(30, 150);
+
+				dX = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f));
+				dY = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
+
+				Status = BallStatus.Launched;
 			}
 			
 			// Check for collision
@@ -75,18 +80,7 @@ namespace Breakthrough
 			X += dX;
 			Y += dY;
 		}
-
-		private void Launch()
-		{
-			float angle = random.Next(-60, 61);
-			int sign = random.Next(0, 2) * 2 - 1;
-
-			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
-			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
-
-			Status = BallStatus.Launched;
-		}
-
+		
 		private bool WallCollision()
 		{
 			return (X + dX < 0) || (X + Ball.Width + dX >= Field.Width);
@@ -133,11 +127,12 @@ namespace Breakthrough
 
 		private void BounceOffPaddle(Paddle paddle)
 		{
-			float angle = (2.0f * (X + (Ball.Width / 2) - paddle.X) - Paddle.Width);
-			int sign = (paddle.Y < Field.Height / 2) ? 1 : -1;
+			float bxc = X + Ball.Width / 2;
+			float angle = 30 + (1 - (bxc - paddle.X) / Paddle.Width) * 120; // angle from 30 to 150
+			int sign = (paddle is Player) ? -1 : 1;
 
-			dX = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f));
-			dY = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f) * sign);
+			dX = (int)(Speed * Math.Cos(angle * Math.PI / 180.0f));
+			dY = (int)(Speed * Math.Sin(angle * Math.PI / 180.0f) * sign);
 
 			Bounces++;
 		}

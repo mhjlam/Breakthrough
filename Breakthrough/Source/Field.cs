@@ -91,7 +91,7 @@ namespace Breakthrough
 			int brickWidth = Field.Width / columns;
 			int brickHeight = Field.Height / 4 / rows;
 
-			int startHeight = Field.Height * 1 / 5;
+			int startHeight = Field.Height / 2 - Field.Height / 8;
 
 			for (int r = 0; r < rows; ++r)
 			{
