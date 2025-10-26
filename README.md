@@ -1,7 +1,10 @@
 # Breakthrough
+
 Pong meets Breakout
 
-<img src="images/Breakthrough.gif" width="320">
+<p align="center">
+   <img src="media/breakthrough.gif" alt="Demo Animation" width="720"/>
+</p>
 
 ## TODO
 
