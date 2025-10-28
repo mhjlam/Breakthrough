@@ -1,9 +1,12 @@
 # Breakthrough
 
-Pong meets Breakout
+**Pong Meets Breakout**
+
+> Maurits Lam  
+> 2025
 
 <p align="center">
-   <img src="media/breakthrough.gif" alt="Demo Animation" width="720"/>
+   <img src="media/breakthrough.gif" alt="Demo Animation" height="400"/>
 </p>
 
 ## TODO
